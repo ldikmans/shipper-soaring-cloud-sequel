@@ -1,7 +1,7 @@
 const KafkaAvro = require('kafka-avro');
 const logger = require('./logger');
 const fmt = require('bunyan-format');
-const kafkaLog  = KafkaAvro.getLogger();
+const kafkaLog = KafkaAvro.getLogger();
 const shipper = require('./shipper');
 
 var kafkaAvro;
@@ -14,6 +14,7 @@ const ORDER_PICKED_TOPIC = process.env.KAFKA_ORDER_PICKED || 'soaring-soaring-or
 const SHIPMENT_REQUEST_ISSUED_TOPIC = process.env.KAFKA_SHIPMENT_REQUEST_ISSUED_TOPIC || 'soaring-shipmentrequestissue';
 
 exports.initKafkaAvro = function () {
+
     kafkaAvro = new KafkaAvro(
             {
                 kafkaBroker: kafkaBrokerVar,
@@ -26,30 +27,30 @@ exports.initKafkaAvro = function () {
     kafkaAvro.init()
             .then(function () {
                 logger.info('Kafka Avro Ready to use');
+                let orderPickedConsumer = kafkaAvro.addConsumer(ORDER_PICKED_TOPIC);
+                let issueShipmentRequestConsumer = kafkaAvro.addConsumer(SHIPMENT_REQUEST_ISSUED_TOPIC);
 
+                kafkaLog.addStream({
+                    type: 'stream',
+                    stream: fmt({
+                        outputMode: 'short',
+                        levelInString: true
+                    }),
+                    level: 'debug'
+                });
+
+
+
+                orderPickedConsumer.on('message', message => {
+                    logger.debug('we received a message ' + message);
+                    shipper.pickUp(message);
+                });
+
+
+
+                issueShipmentRequestConsumer.on('message', message => {
+                    logger.debug('we received a message ' + message);
+                    shipper.offerDelivery(message);
+                });
             });
 };
-
-//create Stream
-kafkaLog.addStream({
-    type: 'stream',
-    stream: fmt({
-        outputMode: 'short',
-        levelInString: true
-    }),
-    level: 'debug'
-});
-
-let orderPickedConsumer = kafkaAvro.addConsumer(ORDER_PICKED_TOPIC);
-
-orderPickedConsumer.on('message', message => {
-    logger.debug('we received a message ' + message);
-    shipper.pickUp(message);
-});
-
-let issueShipmentRequestConsumer = kafkaAvro.addConsumer(SHIPMENT_REQUEST_ISSUED_TOPIC);
-
-issueShipmentRequestConsumer.on('message', message => {
-    logger.debug('we received a message ' + message);
-    shipper.offerDelivery(message);
-});
