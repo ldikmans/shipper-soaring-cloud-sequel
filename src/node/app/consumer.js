@@ -1,10 +1,12 @@
 const KafkaAvro = require('kafka-avro');
-const logger = require('./logger');
 const fmt = require('bunyan-format');
 const kafkaLog = KafkaAvro.getLogger();
 const shipper = require('./shipper');
+const customer = require('./customer');
 
 const kafkaConsumerGroup = "shipper-consumer1";
+
+const wait = process.env.WAIT_TIMEOUT_FOR_RECEIVE || 120000; //ms, 2 minutes 
 
 var kafkaAvro;
 
@@ -26,11 +28,11 @@ exports.initKafkaAvro = function () {
                 parseOptions: {wrapUnions: true}
             }
     );
-    logger.debug("kafkaBroker: " + kafkaBrokerVar);
-    logger.debug("kafkaRegistryVar: " + kafkaRegistryVar);
+    console.log("kafkaBroker: " + kafkaBrokerVar);
+    console.log("kafkaRegistryVar: " + kafkaRegistryVar);
     kafkaAvro.init()
             .then(function () {
-                logger.info('Kafka Avro Ready to use');
+                console.info('Kafka Avro Ready to use');
             });
             
 
@@ -54,15 +56,13 @@ kafkaAvro.getConsumer({
           waitInterval: 0
         });
 
-        //Exit if error
         stream.on('error', function(err) {
-          console.log(err);
+          console.error(err);
           process.exit(1);
         });
 
-        //exist if error
         consumer.on('error', function(err) {
-          console.log(err);
+          console.error(err);
           process.exit(1);
         });
 
@@ -74,6 +74,7 @@ kafkaAvro.getConsumer({
             } 
             else if(message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC){
                 shipper.offerDelivery(message.parsed);
+                setTimeout(customer.receiveDelivery(message.parsed), wait);
             }
         });
     });
