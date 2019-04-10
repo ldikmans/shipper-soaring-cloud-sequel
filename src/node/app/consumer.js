@@ -17,7 +17,6 @@ const SHIPMENT_REQUEST_ISSUED_TOPIC = process.env.KAFKA_SHIPMENT_REQUEST_ISSUED_
 
 let topics = [ORDER_PICKED_TOPIC, SHIPMENT_REQUEST_ISSUED_TOPIC];
 
-exports.initKafkaAvro = function () {
 
     kafkaAvro = new KafkaAvro(
             {
@@ -81,4 +80,12 @@ exports.initKafkaAvro = function () {
             }
         });
     });
+    
+var subscribers = [];
+
+var avroEventHubListener = module.exports;
+
+avroEventHubListener.subscribeToEvents = function (callback) {
+    console.log("event subscription received");
+    subscribers.push(callback);
 };

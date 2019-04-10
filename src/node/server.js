@@ -1,4 +1,4 @@
-const shipper = require('./app.shipper');
+const shipper = require('./app/shipper');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -11,7 +11,20 @@ const VERSION = '1.0.0';
 const app = express();
 var upTime;
 
-consumer.initKafkaAvro();
+//consumer.initKafkaAvro();
+
+
+consumer.subscribeToEvents(
+   (topic, message) => {
+       console.log("Avro EventBridge: Received event from event hub on topic " + topic);
+       try {
+           console.log("The event:");
+           console.log(JSON.stringify(message));
+           } catch (error) {
+           console.log("failed to handle message from event hub", error);
+       }
+   }
+);
 
 
 app.use(bodyParser.urlencoded({extended: true}));
