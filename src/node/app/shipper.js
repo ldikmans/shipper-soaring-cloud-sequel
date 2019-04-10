@@ -52,7 +52,8 @@ exports.offerDelivery = function(message){
 
 function createOffer(orderId){
      
-    let price =Math.floor(Math.random() * (+maxPrice - +minPrice)) + +minPrice; 
+    let price =Math.floor(Math.random() * (+maxPrice - +minPrice)) + +minPrice;
+    console.log('price: '+ price);
     let requestBody = {
 	'orderId': orderId,
 	'shipper': shipper,
