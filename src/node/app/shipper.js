@@ -60,7 +60,7 @@ function createOffer(orderId){
 	'deliveryDate': new Date(), 
 	'trackingInfo': price > 1
     };
-    logger.debug('offer: ' + requestBody);
+    logger.debug('offer: ' + JSON.stringify(requestBody));
     return requestBody;
     
 }
