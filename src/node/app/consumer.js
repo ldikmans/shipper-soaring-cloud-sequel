@@ -14,7 +14,7 @@ var kafkaBrokerVar = process.env.KAFKA_BROKER || '130.61.35.61:9092';
 var kafkaRegistryVar = process.env.KAFKA_REGISTRY || 'http://130.61.35.61:8081';
 
 //topics as they are defined on Kafka
-const ORDER_PICKED_TOPIC = process.env.KAFKA_ORDER_PICKED || 'soaring-soaring-orderpicked';
+const ORDER_PICKED_TOPIC = process.env.KAFKA_ORDER_PICKED || 'soaring-orderpicked';
 const SHIPMENT_REQUEST_ISSUED_TOPIC = process.env.KAFKA_SHIPMENT_REQUEST_ISSUED_TOPIC || 'soaring-shipmentrequestissued';
 
 let topics = [ORDER_PICKED_TOPIC, SHIPMENT_REQUEST_ISSUED_TOPIC];
