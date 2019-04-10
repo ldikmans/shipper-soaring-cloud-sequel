@@ -11,6 +11,9 @@ const VERSION = '1.0.0';
 const app = express();
 var upTime;
 
+const ORDER_PICKED_TOPIC = process.env.KAFKA_ORDER_PICKED || 'soaring-soaring-orderpicked';
+const SHIPMENT_REQUEST_ISSUED_TOPIC = process.env.KAFKA_SHIPMENT_REQUEST_ISSUED_TOPIC || 'soaring-shipmentrequestissued';
+
 //consumer.initKafkaAvro();
 
 
@@ -18,13 +21,24 @@ consumer.subscribeToEvents(
    (topic, message) => {
        console.log("Avro EventBridge: Received event from event hub on topic " + topic);
        try {
-           console.log("The event:");
-           console.log(JSON.stringify(message));
-           } catch (error) {
-           console.log("failed to handle message from event hub", error);
-       }
-   }
+            if (topic === ORDER_PICKED_TOPIC) {
+                console.log("in order picked topic");
+                shipper.pickup(message.parsed);
+            }
+            if (topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
+                console.log("in shipment request issued topic");
+                shipper.handleOrderEventHubEvent(message);
+            }
+           
+            } catch (error) {
+            console.log("failed to handle message from event hub", error);
+
+        }
+    }
 );
+
+
+
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -49,7 +63,7 @@ router.get('/', function (req, res) {
  * @argument {type} req empty object
  * @argument {type} res the version, status and uptime
  */
-router.get('/health', function (req, res) {
+router.get('/shipper/health', function (req, res) {
     res.json({
         "version": VERSION,
         "status": "OK",
@@ -60,7 +74,7 @@ router.get('/health', function (req, res) {
 /**
  * this is a workaround because we have issues consuming the topic
  */
-router.post('shipper/orderPicked', function (req, res, next) {
+router.post('/shipper/orderPicked', function (req, res, next) {
 
     logger.debug('orderPicked');
     try {
@@ -74,7 +88,7 @@ router.post('shipper/orderPicked', function (req, res, next) {
 /**
  * this is a workaround because we have issues consuming the topic
  */
-router.post('shipper/offerDelivery', function (req, res, next) {
+router.post('/shipper/offerDelivery', function (req, res, next) {
     logger.debug('offer delivery');
     try {
         shipper.offerDeliver(req.body, res, next);
@@ -84,8 +98,9 @@ router.post('shipper/offerDelivery', function (req, res, next) {
     }
 });
 
-// all of our routes will be prefixed with /shipment
+// all of our routes will be prefixed with /shipper
 app.use('/shipper', router);
+
 app.use(function (err, req, res, next) {
     logger.debug('request: ' + req.baseUrl);
     logger.error(err); // 

@@ -5,7 +5,7 @@ const shipper = 'QuickSilver';
 const minPrice = 1; 
 const maxPrice = 2.50; 
 
-exports.pickUp = function(message){
+exports.pickUp = async function(message){
      let orderId = message.orderId;
      let requestBody = {
          'shipper': shipper,
@@ -27,7 +27,7 @@ exports.pickUp = function(message){
     });
 };
 
-exports.offerDelivery = function(message){
+exports.offerDelivery = async function(message){
      let orderId = message.orderId;
      let requestBody = createOffer(orderId);
      return requestPromise({

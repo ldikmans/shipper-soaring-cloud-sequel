@@ -13,74 +13,76 @@ var kafkaRegistryVar = process.env.KAFKA_REGISTRY || 'http://130.61.35.61:8081';
 
 //topics as they are defined on Kafka
 const ORDER_PICKED_TOPIC = process.env.KAFKA_ORDER_PICKED || 'soaring-soaring-orderpicked';
-const SHIPMENT_REQUEST_ISSUED_TOPIC = process.env.KAFKA_SHIPMENT_REQUEST_ISSUED_TOPIC || 'soaring-shipmentrequestissue';
+const SHIPMENT_REQUEST_ISSUED_TOPIC = process.env.KAFKA_SHIPMENT_REQUEST_ISSUED_TOPIC || 'soaring-shipmentrequestissued';
 
 let topics = [ORDER_PICKED_TOPIC, SHIPMENT_REQUEST_ISSUED_TOPIC];
-
-
-    kafkaAvro = new KafkaAvro(
-            {
-                kafkaBroker: kafkaBrokerVar,
-                schemaRegistry: kafkaRegistryVar,
-                parseOptions: {wrapUnions: true}
-            }
-    );
-    console.log("kafkaBroker: " + kafkaBrokerVar);
-    console.log("kafkaRegistryVar: " + kafkaRegistryVar);
-    kafkaAvro.init()
-            .then(function () {
-                console.info('Kafka Avro Ready to use');
-            });
+console.log("kafkaBroker: " + kafkaBrokerVar);
+console.log("kafkaRegistryVar: " + kafkaRegistryVar);
 
 
 
-    kafkaLog.addStream({
-        type: 'stream',
-        stream: fmt({
-            outputMode: 'short',
-            levelInString: true
-        }),
-        level: 'debug'
+kafkaAvro = new KafkaAvro(
+        {
+            kafkaBroker: kafkaBrokerVar,
+            schemaRegistry: kafkaRegistryVar,
+            parseOptions: {wrapUnions: true}
+        }
+);
+
+kafkaAvro.init()
+        .then(function () {
+            console.info('Kafka Avro Ready to use');
+        });
+
+
+
+kafkaLog.addStream({
+    type: 'stream',
+    stream: fmt({
+        outputMode: 'short',
+        levelInString: true
+    }),
+    level: 'debug'
+});
+
+kafkaAvro.getConsumer({
+    'group.id': kafkaConsumerGroup,
+    'socket.keepalive.enable': true,
+    'enable.auto.commit': true
+}).then(function (consumer) {
+
+    console.log('addming consumer' + consumer);
+    //Read messages
+    var stream = consumer.getReadStream(topics, {
+        waitInterval: 0
     });
 
-    kafkaAvro.getConsumer({
-        'group.id': kafkaConsumerGroup,
-        'socket.keepalive.enable': true,
-        'enable.auto.commit': true
-    }).then(function (consumer) {
-        
-        console.log('addming consumer' + consumer);
-        //Read messages
-        var stream = consumer.getReadStream(topics, {
-            waitInterval: 0
-        });
-        
-        console.log('listing to topics: ' + topics);
+    console.log('listing to topics: ' + topics);
 
-        stream.on('error', function (err) {
-            console.log('error in stream');
-            console.error(err);
-            process.exit(1);
-        });
-
-        consumer.on('error', function (err) {
-            console.log('error in consumer');
-            console.error(err);
-            process.exit(1);
-        });
-
-        //start streaming data
-        stream.on('data', function (message) {
-            console.log('Received message:', JSON.stringify(message.parsed));
-            if (message.topic === ORDER_PICKED_TOPIC) {
-                shipper.pickUp(message.parsed);
-            } else if (message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
-                shipper.offerDelivery(message.parsed);
-                setTimeout(customer.receiveDelivery(message.parsed), wait);
-            }
-        });
+    stream.on('error', function (err) {
+        console.log('error in stream');
+        console.error(err);
+        process.exit(1);
     });
-    
+
+    consumer.on('error', function (err) {
+        console.log('error in consumer');
+        console.error(err);
+        process.exit(1);
+    });
+
+    //start streaming data
+    stream.on('data', function (message) {
+        console.log('Received message:', JSON.stringify(message.parsed));
+        if (message.topic === ORDER_PICKED_TOPIC) {
+            shipper.pickUp(message.parsed);
+        } else if (message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
+            shipper.offerDelivery(message.parsed);
+            setTimeout(customer.receiveDelivery(message.parsed), wait);
+        }
+    });
+});
+
 var subscribers = [];
 
 var avroEventHubListener = module.exports;
