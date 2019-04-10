@@ -52,7 +52,7 @@ exports.offerDelivery = function(message){
 
 function createOffer(orderId){
      
-    let price = Math.floor(Math.random() * (+maxPrice - +minPrice)) + +minPrice/100;
+    let price = Math.floor(Math.random() * (maxPrice - minPrice) + minPrice)/100;
     console.log('price: '+ price);
     let requestBody = {
 	'orderId': orderId,
