@@ -77,10 +77,12 @@ kafkaAvro.getConsumer({
     stream.on('data', function (message) {
         console.log('Received message:', JSON.stringify(message));
         if (message.topic === ORDER_PICKED_TOPIC) {
+            console.log('in stream on data, order picked topic');
             shipper.pickUp(message);
         } else if (message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
+            console.log('in stream on data, shipment request issued');
             shipper.offerDelivery(message);
-            setTimeout(customer.receiveDelivery(message), wait_to_receive);
+            //setTimeout(customer.receiveDelivery(message), wait_to_receive);
         }
     });
 });

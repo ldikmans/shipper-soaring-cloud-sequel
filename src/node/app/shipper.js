@@ -1,17 +1,17 @@
-const requestPromise = require('request-promise');
+const request = require('request');
 const shippermarketUrl = 'https://129.213.126.223:9022/shippermarketplace';
 const logger = require('./logger');
 const shipper = 'QuickSilver';
 const minPrice = 1; 
 const maxPrice = 2.50; 
 
-exports.pickUp = async function(message){
+exports.pickUp = function(message){
      let orderId = message.orderId;
      let requestBody = {
          'shipper': shipper,
          'event': 'PICKUP'
      };
-     return requestPromise({
+     return request({
         url: shippermarketUrl + '/shipments' + orderId,
         method: "PUT",
         json: true, 
@@ -27,10 +27,10 @@ exports.pickUp = async function(message){
     });
 };
 
-exports.offerDelivery = async function(message){
+exports.offerDelivery = function(message){
      let orderId = message.orderId;
      let requestBody = createOffer(orderId);
-     return requestPromise({
+     return request({
         url: shippermarketUrl + '/offers',
         method: "POST",
         json: true, 

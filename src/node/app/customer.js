@@ -1,4 +1,4 @@
-const requestPromise = require('request-promise');
+const request = require('request');
 const shippermarketUrl = 'https://129.213.126.223:9022/shippermarketplace';
 const logger = require('./logger');
 
@@ -8,7 +8,7 @@ exports.receiveDelivery = function(message){
          'shipper': message.shipper,
          'event': 'RECEIVE'
      };
-     return requestPromise({
+     return request({
         url: shippermarketUrl + '/shipments' + orderId,
         method: "PUT",
         json: true, 

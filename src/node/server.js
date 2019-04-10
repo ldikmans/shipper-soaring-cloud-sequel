@@ -22,10 +22,13 @@ consumer.subscribeToEvents(
        console.log("Avro EventBridge: Received event from event hub on topic " + topic);
        console.log("mesasge: " + message);
        try {
+           
             if (topic === ORDER_PICKED_TOPIC) {
+                console.log('in subscribe to event');
                 shipper.pickup(message);
             }
             if (topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
+                console.log('in subscribe to event');
                 shipper.handleOrderEventHubEvent(message);
             }
            
