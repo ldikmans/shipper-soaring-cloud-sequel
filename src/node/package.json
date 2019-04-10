@@ -1,5 +1,5 @@
 {
-    "name": "Shipper"
+    "name": "Shipper",
     "version": "1.0.0",
     "license": "MIT",
     "description": "shipper that will offer deliveries to customers of the webshop and deliver them",
