@@ -29,7 +29,7 @@ exports.pickUp = function(message){
 
 exports.offerDelivery = function(message){
      let orderId = message.orderId;
-     let requestBody = createOrder(orderId);
+     let requestBody = createOffer(orderId);
      return requestPromise({
         url: shippermarketUrl + '/offers',
         method: "POST",
@@ -46,7 +46,7 @@ exports.offerDelivery = function(message){
     });
 };
 
-function createOrder(orderId){
+function createOffer(orderId){
      
     let price =Math.floor(Math.random() * (+maxPrice - +minPrice)) + +minPrice; 
     let requestBody = {

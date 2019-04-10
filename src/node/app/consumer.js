@@ -6,8 +6,6 @@ const customer = require('./customer');
 
 const kafkaConsumerGroup = "shipper-consumer1";
 
-const wait = process.env.WAIT_TIMEOUT_FOR_RECEIVE || 120000; //ms, 2 minutes 
-
 var kafkaAvro;
 
 var kafkaBrokerVar = process.env.KAFKA_BROKER || 'localhost:9092';
@@ -34,7 +32,8 @@ exports.initKafkaAvro = function () {
             .then(function () {
                 console.info('Kafka Avro Ready to use');
             });
-            
+
+
 
     kafkaLog.addStream({
         type: 'stream',
@@ -45,34 +44,38 @@ exports.initKafkaAvro = function () {
         level: 'debug'
     });
 
-kafkaAvro.getConsumer({
-  'group.id': kafkaConsumerGroup,
-  'socket.keepalive.enable': true,
-  'enable.auto.commit': true
-}).then(function(consumer) {
-
+    kafkaAvro.getConsumer({
+        'group.id': kafkaConsumerGroup,
+        'socket.keepalive.enable': true,
+        'enable.auto.commit': true
+    }).then(function (consumer) {
+        
+        console.log('addming consumer' + consumer);
         //Read messages
         var stream = consumer.getReadStream(topics, {
-          waitInterval: 0
+            waitInterval: 0
+        });
+        
+        console.log('listing to topics: ' + topics);
+
+        stream.on('error', function (err) {
+            console.log('error in stream');
+            console.error(err);
+            process.exit(1);
         });
 
-        stream.on('error', function(err) {
-          console.error(err);
-          process.exit(1);
-        });
-
-        consumer.on('error', function(err) {
-          console.error(err);
-          process.exit(1);
+        consumer.on('error', function (err) {
+            console.log('error in consumer');
+            console.error(err);
+            process.exit(1);
         });
 
         //start streaming data
-        stream.on('data', function(message) {
+        stream.on('data', function (message) {
             console.log('Received message:', JSON.stringify(message.parsed));
-            if(message.topic === ORDER_PICKED_TOPIC){
+            if (message.topic === ORDER_PICKED_TOPIC) {
                 shipper.pickUp(message.parsed);
-            } 
-            else if(message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC){
+            } else if (message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
                 shipper.offerDelivery(message.parsed);
                 setTimeout(customer.receiveDelivery(message.parsed), wait);
             }

@@ -1,9 +1,9 @@
-
+const shipper = require('./app.shipper');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const logger = require('./app/logger');
-const producer = require('./app/consumer');
+const consumer = require('./app/consumer');
 
 const port = process.env.PORT || 7070;
 const VERSION = '1.0.0';
@@ -11,7 +11,7 @@ const VERSION = '1.0.0';
 const app = express();
 var upTime;
 
-producer.initKafkaAvro();
+consumer.initKafkaAvro();
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -44,10 +44,35 @@ router.get('/health', function (req, res) {
     });
 });
 
+/**
+ * this is a workaround because we have issues consuming the topic
+ */
+router.post('shipper/orderPicked', function (req, res, next) {
+
+    logger.debug('orderPicked');
+    try {
+        shipper.pickUp(req.body, res, next);
+    } catch (error) {
+        next(error);
+    }
+
+});
+
+/**
+ * this is a workaround because we have issues consuming the topic
+ */
+router.post('shipper/offerDelivery', function (req, res, next) {
+    logger.debug('offer delivery');
+    try {
+        shipper.offerDeliver(req.body, res, next);
+
+    } catch (error) {
+        next(error);
+    }
+});
 
 // all of our routes will be prefixed with /shipment
 app.use('/shipper', router);
-
 app.use(function (err, req, res, next) {
     logger.debug('request: ' + req.baseUrl);
     logger.error(err); // 
@@ -55,7 +80,6 @@ app.use(function (err, req, res, next) {
         err.statusCode = 500;
     res.status(err.statusCode).send(err.message);
 });
-
 // START THE SERVER
 // =============================================================================
 app.listen(port);
