@@ -21,7 +21,7 @@ exports.receiveDelivery = function(message){
             return error;
         }
         else{
-            console.log('returning body: ' + JSON.parse(body));
+            console.log('returning body: ' + JSON.stringify(body));
             return body;
         }
     });
