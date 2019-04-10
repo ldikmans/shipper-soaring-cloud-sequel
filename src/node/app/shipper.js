@@ -1,5 +1,4 @@
 const request = require('request');
-//TODO make this a process env
 const shippermarketUrl = process.env.SHIPPERMARKET_URL || 'http://129.213.126.223:8011/shippermarketplace';
 const logger = require('./logger');
 const shipper = 'QuickSilver';

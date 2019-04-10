@@ -1,6 +1,7 @@
 const request = require('request');
-const shippermarketUrl = 'https://129.213.126.223:9022/shippermarketplace';
+const shippermarketUrl = process.env.SHIPPERMARKET_URL || 'http://129.213.126.223:8011/shippermarketplace';
 const logger = require('./logger');
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 exports.receiveDelivery = function(message){
      let orderId = message.orderId;
