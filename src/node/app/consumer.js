@@ -8,7 +8,7 @@ const kafkaConsumerGroup = "shipper-consumer1";
 
 var kafkaAvro;
 
-var kafkaBrokerVar = process.env.KAFKA_BROKER || 'localhost:9092';
+var kafkaBrokerVar = process.env.KAFKA_BROKER || '130.61.35.61:9092';
 var kafkaRegistryVar = process.env.KAFKA_REGISTRY || 'http://130.61.35.61:8081';
 
 //topics as they are defined on Kafka
