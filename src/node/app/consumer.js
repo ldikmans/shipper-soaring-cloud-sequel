@@ -6,6 +6,8 @@ const customer = require('./customer');
 
 const kafkaConsumerGroup = "shipper-consumer1";
 
+const wait_to_receive = 120000 //ms - 2 minutes
+
 var kafkaAvro;
 
 var kafkaBrokerVar = process.env.KAFKA_BROKER || '130.61.35.61:9092';
@@ -78,7 +80,7 @@ kafkaAvro.getConsumer({
             shipper.pickUp(message.parsed);
         } else if (message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
             shipper.offerDelivery(message.parsed);
-            setTimeout(customer.receiveDelivery(message.parsed), wait);
+            setTimeout(customer.receiveDelivery(message.parsed), wait_to_receive);
         }
     });
 });
