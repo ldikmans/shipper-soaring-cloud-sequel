@@ -1,4 +1,5 @@
 const request = require('request');
+//TODO make this a process env
 const shippermarketUrl = 'https://129.213.126.223:9022/shippermarketplace';
 const logger = require('./logger');
 const shipper = 'QuickSilver';
@@ -22,12 +23,14 @@ exports.pickUp = function(message){
             return error;
         }
         else{
+            console.log('returning body: ' + body);
             return body;
         }
     });
 };
 
 exports.offerDelivery = function(message){
+     console.log("offering a delivery for orderId: " + message.orderId);
      let orderId = message.orderId;
      let requestBody = createOffer(orderId);
      return request({
@@ -41,6 +44,7 @@ exports.offerDelivery = function(message){
             return error;
         }
         else{
+            console.log('returning body' + body);
             return body;
         }
     });
