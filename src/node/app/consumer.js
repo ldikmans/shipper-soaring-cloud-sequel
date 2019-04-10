@@ -53,7 +53,7 @@ kafkaAvro.getConsumer({
     'enable.auto.commit': true
 }).then(function (consumer) {
 
-    console.log('addming consumer' + consumer);
+    console.log('adding consumer' + JSON.stringify(consumer));
     //Read messages
     var stream = consumer.getReadStream(topics, {
         waitInterval: 0
@@ -75,12 +75,12 @@ kafkaAvro.getConsumer({
 
     //start streaming data
     stream.on('data', function (message) {
-        console.log('Received message:', JSON.stringify(message.parsed));
+        console.log('Received message:', JSON.stringify(message));
         if (message.topic === ORDER_PICKED_TOPIC) {
-            shipper.pickUp(message.parsed);
+            shipper.pickUp(message);
         } else if (message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
-            shipper.offerDelivery(message.parsed);
-            setTimeout(customer.receiveDelivery(message.parsed), wait_to_receive);
+            shipper.offerDelivery(message);
+            setTimeout(customer.receiveDelivery(message), wait_to_receive);
         }
     });
 });
