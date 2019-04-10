@@ -20,13 +20,12 @@ const SHIPMENT_REQUEST_ISSUED_TOPIC = process.env.KAFKA_SHIPMENT_REQUEST_ISSUED_
 consumer.subscribeToEvents(
    (topic, message) => {
        console.log("Avro EventBridge: Received event from event hub on topic " + topic);
+       console.log("mesasge: " + message);
        try {
             if (topic === ORDER_PICKED_TOPIC) {
-                console.log("in order picked topic");
-                shipper.pickup(message.parsed);
+                shipper.pickup(message);
             }
             if (topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
-                console.log("in shipment request issued topic");
                 shipper.handleOrderEventHubEvent(message);
             }
            
@@ -36,9 +35,6 @@ consumer.subscribeToEvents(
         }
     }
 );
-
-
-
 
 
 app.use(bodyParser.urlencoded({extended: true}));
