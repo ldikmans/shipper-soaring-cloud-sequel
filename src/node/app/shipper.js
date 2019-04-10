@@ -5,6 +5,7 @@ const logger = require('./logger');
 const shipper = 'QuickSilver';
 const minPrice = 1; 
 const maxPrice = 2.50; 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 exports.pickUp = function(message){
      let orderId = message.orderId;
