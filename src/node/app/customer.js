@@ -11,7 +11,7 @@ exports.receiveDelivery = function(message){
          'event': 'RECEIVE'
      };
      return request({
-        url: shippermarketUrl + '/shipments' + orderId,
+        url: shippermarketUrl + '/shipments/' + orderId,
         method: "PUT",
         json: true, 
         body: requestBody
