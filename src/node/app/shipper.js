@@ -23,7 +23,7 @@ exports.pickUp = function(message){
             return error;
         }
         else{
-            console.log('returning body: ' + body);
+            console.log('returning body: ' + JSON.parse(body));
             return body;
         }
     });
@@ -44,7 +44,7 @@ exports.offerDelivery = function(message){
             return error;
         }
         else{
-            console.log('returning body' + body);
+            console.log('returning body' + JSON.parse(body));
             return body;
         }
     });

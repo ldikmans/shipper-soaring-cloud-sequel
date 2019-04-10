@@ -5,6 +5,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 exports.receiveDelivery = function(message){
      let orderId = message.orderId;
+     console.log('sending an receive to the shippermarket for orderId:' + orderId);
      let requestBody = {
          'shipper': message.shipper,
          'event': 'RECEIVE'
@@ -20,6 +21,7 @@ exports.receiveDelivery = function(message){
             return error;
         }
         else{
+            console.log('returning body: ' + JSON.parse(body));
             return body;
         }
     });
