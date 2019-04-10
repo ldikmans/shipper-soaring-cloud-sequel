@@ -1,0 +1,18 @@
+version: '2'
+services:
+  shipper-ms:
+      #Image
+      image: lonneke/shipper-ms:1.0.0
+      build: ./src/node
+      environment:
+        LOG_LEVEL: 'debug'
+        PORT: 7070
+        KAFKA_BROKER: 130.61.35.61:9092
+        KAFKA_REGISTRY: http://130.61.35.61:8081
+        PUBLISH: 'true'
+        KAFKA_ORDER_PICKED: 'soaring-orderpicked';
+        KAFKA_SHIPMENT_REQUEST_ISSUED_TOPIC: 'soaring-shipmentrequestissued'
+        SHIPPERMARKET_URL: 'http://129.213.126.223:8011/shippermarketplace'
+      ports: 
+       - "7070:7070"
+      command: npm start
