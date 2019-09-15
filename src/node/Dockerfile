@@ -30,5 +30,6 @@ RUN npm install body-parser --save
 RUN npm install kafka-avro --save
 RUN npm install
 
-# start command
+# start 
+EXPOSE 7070
 CMD [ “npm”, “start” ]
