@@ -32,4 +32,4 @@ RUN npm install
 
 # start 
 EXPOSE 7070
-CMD [ “npm”, “start” ]
+CMD [ "npm", "start" ]
