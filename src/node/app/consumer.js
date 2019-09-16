@@ -80,7 +80,7 @@ kafkaAvro.getConsumer({
             console.log('in stream on data, order picked topic');
             shipper.pickUp(message.parsed);
             //todo put in timout
-            customer.receiveDelivery(message.parsed);
+            //customer.receiveDelivery(message.parsed);
         } else if (message.topic === SHIPMENT_REQUEST_ISSUED_TOPIC) {
             console.log('in stream on data, shipment request issued');
             shipper.offerDelivery(message.parsed);
